@@ -19,7 +19,7 @@ jobs:
       with:
         source_file: 'build_output/firmware/'
         destination_repo: 'racksync/tasmota-build'
-        destination_folder: 'firmware'
+        destination_folder: '/'
         user_email: 'info@racksync.com'
         user_name: 'racksync'
         commit_message: 'Tasmota build has been updated'
