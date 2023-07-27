@@ -17,7 +17,7 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
       with:
-        source_file: 'build_output/firmware/*'
+        source_file: 'build_output/firmware/'
         destination_repo: 'racksync/tasmota-build'
         destination_folder: 'firmware'
         user_email: 'info@racksync.com'
