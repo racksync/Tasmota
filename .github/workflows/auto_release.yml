@@ -2,8 +2,12 @@ name: Auto Release
 
 on: 
   push:
-    tags:
-    - 'v*'
+    paths:
+      - build_output/firmware/*
+    branches: master
+  #push:
+  #  tags:
+  #  - 'v*'
 
 jobs:
 
