@@ -17,4 +17,4 @@ jobs:
       with:
         #artifacts: "example.bin,foo/*.txt"
         artifacts: "build_output/firmware/*"
-        bodyFile: "CHANGELOG.md"
+        bodyFile: "RELEASE.md"
