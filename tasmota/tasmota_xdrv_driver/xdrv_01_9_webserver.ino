@@ -404,7 +404,7 @@ const char HTTP_COUNTER[] PROGMEM =
   "<br><div id='t' style='text-align:center;'></div>";
 
 const char HTTP_END[] PROGMEM =
-  "<div style='text-align:right;font-size:11px;'><hr/><a href='https://racksync.com' target='_blank' style='color:#aaa;'>Special Customized" D_BY " RACKSYNC</a></div>"
+  "<div style='text-align:center;font-size:11px;'><hr/><a href='https://racksync.com' target='_blank' style='color:#aaa;'>Special Customized %s " D_BY " RACKSYNC</a></div>"
   "</div>"
   "</body>"
   "</html>";
