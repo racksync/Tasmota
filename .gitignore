@@ -21,6 +21,7 @@ unpacked_boards
 tasmota/user_config_override.h
 build
 #build_output/*
+build_output/tasmota*
 build_output/map
 firmware.map
 firmware.asm
