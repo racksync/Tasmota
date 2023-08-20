@@ -1,8 +1,8 @@
-name: Push Official Build
+name: Push Experiment Build
 on:
   push:
     paths:
-      - build_output/firmware/*
+      - build_output/experiment/*
     branches: master
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
       with:
-        source_file: 'build_output/firmware/'
+        source_file: 'build_output/experiment/'
         destination_repo: 'racksync/tasmota-build'
         destination_folder: '/'
         user_email: 'info@racksync.com'
