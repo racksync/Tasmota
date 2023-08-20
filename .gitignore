@@ -19,6 +19,8 @@ data
 unpacked_fs
 unpacked_boards
 tasmota/user_config_override.h
+tasmota/user_config_override_official.h
+tasmota/user_config_override_untested.h
 build
 #build_output/*
 build_output/tasmota*
