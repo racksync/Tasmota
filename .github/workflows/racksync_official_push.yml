@@ -1,4 +1,4 @@
-name: Push Official Build
+name: Push Builded Files
 on:
   push:
     paths:
