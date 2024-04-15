@@ -57,6 +57,7 @@
 #define D_AP "AP"                    // Access Point
 #define D_AS "名称:"
 #define D_AUTO "自动"
+#define D_BATTERY "Battery"
 #define D_BATT "Batt"                // Short for Battery
 #define D_BATTERY_CHARGE "Charge"   // Battery charge in %
 #define D_BLINK "闪烁"
@@ -118,6 +119,7 @@
 #define D_GROUP "组:"
 #define D_HOST "主机"
 #define D_HALL_EFFECT "Hall Effect"
+#define D_HEATINDEX "Heat index"
 #define D_HOSTNAME "主机名"
 #define D_HUMIDITY "湿度"
 #define D_ILLUMINANCE "照度"
@@ -166,7 +168,6 @@
 #define D_RESTART "重启"
 #define D_RESTARTING "正在重启"
 #define D_RESTART_REASON "重启原因"
-#define D_RESTORE "恢复"
 #define D_RETAINED "已保留"
 #define D_RULE "规则"
 #define D_SAVE "保存"
@@ -192,7 +193,6 @@
 #define D_TWILIGHT_ASTRONOMICAL "Astronomical"
 #define D_TWILIGHT_CIVIL "Civil"
 #define D_TWILIGHT_NAUTICAL "Nautical"
-#define D_UPGRADE "升级"
 #define D_UPLOAD "上传"
 #define D_UPTIME "运行时间"
 #define D_USED "已使用"
@@ -277,6 +277,7 @@
 #define D_INFORMATION "信息"
 #define D_FIRMWARE_UPGRADE "固件升级"
 #define D_MANAGEMENT "控制台"
+#define D_GPIO_VIEWER "GPIO Viewer"
 #define D_CONSOLE "控制台"
 #define D_CONFIRM_RESTART "确认重启"
 
@@ -290,6 +291,7 @@
 #define D_RESET_CONFIGURATION "重置配置"
 #define D_BACKUP_CONFIGURATION "备份配置"
 #define D_RESTORE_CONFIGURATION "还原配置"
+#define D_START_RESTORE "Start restore"
 #define D_MAIN_MENU "主菜单"
 
 #define D_MODULE_PARAMETERS "模块设置"
@@ -534,6 +536,11 @@
 #define D_ENERGY_YESTERDAY "昨日用电量"
 #define D_ENERGY_TOTAL "总用电量"
 
+// xsns_100_ina3221.ino
+#define  D_UNIT_CHARGE                    "Ah"
+#define  D_CHARGE                         "Charge"    
+#define  D_ENERGY                         "Energy"
+
 // xdrv_27_shutter.ino
 #define D_OPEN "Open"
 #define D_CLOSE "Close"
@@ -546,6 +553,23 @@
 #define D_DEVICE "Device"
 #define D_DEVICE_INPUT "Input"
 #define D_DEVICE_OUTPUT "Output"
+
+// xdrv_39_thermostat.ino, xdrv_85_esp32_ble_eq3_trv.ino
+#define D_THERMOSTAT                  "Thermostat"
+#define D_THERMOSTAT_SET_POINT        "Set Point Temperature"
+#define D_THERMOSTAT_SENSOR           "Current Temperature"
+#define D_THERMOSTAT_GRADIENT         "Gradient Temperature"
+#define D_THERMOSTAT_DUTY_CYCLE       "Duty cycle"
+#define D_THERMOSTAT_VALVE_POSITION   "Valve Position"
+#define D_THERMOSTAT_CYCLE_TIME       "Cycle time"
+#define D_THERMOSTAT_PI_AUTOTUNE      "PI Auto tuning"
+#define D_THERMOSTAT_CONTROL_METHOD   "Control method"
+#define D_THERMOSTAT_RAMP_UP          "Ramp up"
+#define D_THERMOSTAT_PI               "PI"
+#define D_THERMOSTAT_AUTOTUNE         "Autotune"
+#define D_THERMOSTAT_RAMP_UP_HYBRID   "Ramp up (Hybrid)"
+#define D_THERMOSTAT_PI_HYBRID        "PI (Hybrid)"
+#define D_THERMOSTAT_AUTOTUNE_HYBRID  "Autotune (Hybrid)"
 
 // xsns_05_ds18b20.ino
 #define D_SENSOR_BUSY "传感器正忙"
@@ -688,6 +712,10 @@
 #define D_SENSOR_SPI_MOSI      "SPI MOSI"
 #define D_SENSOR_SPI_CLK       "SPI CLK"
 #define D_SENSOR_SDIO_CMD      "SDIO CMD"
+#define D_GPIO_TS_SPI_CS       "TS SPI CS"
+#define D_GPIO_TS_RST          "TS RST"
+#define D_GPIO_TS_IRQ          "TS IRQ"
+#define D_SENSOR_SDIO_CMD      "SDIO CMD"
 #define D_SENSOR_SDIO_CLK      "SDIO CLK"
 #define D_SENSOR_SDIO_D0       "SDIO D0"
 #define D_SENSOR_SDIO_D1       "SDIO D1"
@@ -758,6 +786,13 @@
 #define D_SENSOR_MAX31855_CLK  "MX31855 CLK"
 #define D_SENSOR_MAX31855_DO   "MX31855 DO"
 #define D_SENSOR_MAX31865_CS   "MX31865 CS"
+#define D_GPIO_RN2XX3_TX       "RN2XX3 Tx"
+#define D_GPIO_RN2XX3_RX       "RN2XX3 Rx"
+#define D_GPIO_RN2XX3_RST      "RN2XX3 Rst"
+#define D_GPIO_LORA_CS         "LoRa CS"
+#define D_GPIO_LORA_RST        "LoRa Rst"
+#define D_GPIO_LORA_BUSY       "LoRa Busy"
+#define D_GPIO_LORA_DI         "LoRa DIO"    // Suffix "0","1","2"
 #define D_SENSOR_NRG_SEL       "HLWBL SEL"  // Suffix "i"
 #define D_SENSOR_NRG_CF1       "HLWBL CF1"
 #define D_SENSOR_HLW_CF        "HLW8012 CF"
@@ -942,6 +977,7 @@
 #define D_SENSOR_BIOPDU_PZEM016_RX "BioPDU PZEM016 Rx"
 #define D_SENSOR_BIOPDU_BIT    "BioPDU Bit"
 #define D_SENSOR_LOX_O2_RX     "LoxO2 RX"
+#define D_GPIO_MAGIC_SWITCH "MagicSwitch"
 
 // Units
 #define D_UNIT_AMPERE "A"
@@ -1205,5 +1241,9 @@
 // xsns_106_gdk101.ino
 #define D_AVG_RAD_DOSE                    "平均辐射剂量"
 #define D_UNIT_US_H                       "µSv/h"
+
+// ixrv92_pipsolar.ino
+#define D_SENSOR_PIPSOLAR_TX             "Pipsolar TX"
+#define D_SENSOR_PIPSOLAR_RX             "Pipsolar RX"
 
 #endif  // _LANGUAGE_ZH_CN_H_

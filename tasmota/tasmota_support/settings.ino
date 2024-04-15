@@ -46,7 +46,7 @@ void RtcSettingsSave(void) {
       memset(&RtcSettings, 0, sizeof(RtcSettings));
       RtcSettings.valid = RTC_MEM_VALID;
 //      RtcSettings.ex_energy_kWhtoday = Settings->energy_power_calibration2;  // = ex_energy_kWhtoday
-//      RtcSettings.ex_energy_kWhtotal = Settings->ex_energy_kWhtotal;
+//      RtcSettings.ex_energy_kWhtotal = Settings->power_lock;
       for (uint32_t i = 0; i < 3; i++) {
         RtcSettings.energy_kWhtoday_ph[i] = Settings->energy_kWhtoday_ph[i];
         RtcSettings.energy_kWhtotal_ph[i] = Settings->energy_kWhtotal_ph[i];
@@ -420,7 +420,7 @@ bool SettingsBufferAlloc(uint32_t upload_size) {
   } else {  
     char filename[14];
     for (uint32_t i = 0; i < 129; i++) {
-      snprintf_P(filename, sizeof(filename), PSTR(TASM_FILE_DRIVER), i);
+      snprintf_P(filename, sizeof(filename), PSTR(TASM_FILE_DRIVER), i);      // /.drvset012
       uint32_t fsize = TfsFileSize(filename);
       if (fsize) {
         if (settings_size == sizeof(TSettings)) {
@@ -466,7 +466,7 @@ uint32_t SettingsConfigBackup(void) {
     filebuf_ptr += sizeof(TSettings);
     char filename[14];
     for (uint32_t i = 0; i < 129; i++) {
-      snprintf_P(filename, sizeof(filename), PSTR(TASM_FILE_DRIVER), i);  // /.drvset012
+      snprintf_P(filename, sizeof(filename), PSTR(TASM_FILE_DRIVER), i);      // /.drvset012
       uint32_t fsize = TfsFileSize(filename);
       if (fsize) {
         // Add tar header with file size
@@ -474,7 +474,7 @@ uint32_t SettingsConfigBackup(void) {
         filebuf_ptr[14] = fsize;
         filebuf_ptr[15] = fsize >> 8;
         filebuf_ptr += 16;
-        if (XdrvCallDriver(i, FUNC_RESTORE_SETTINGS)) {  // Enabled driver
+        if (i && (XdrvCallDriver(i, FUNC_RESTORE_SETTINGS))) {  // Enabled driver
           // Use most relevant config data which might not have been saved to file
 //          AddLog(LOG_LEVEL_DEBUG, PSTR("CFG: Backup driver %d"), i);
           uint32_t data_size = fsize;              // Fix possible buffer overflow
@@ -565,10 +565,13 @@ bool SettingsConfigRestore(void) {
       uint32_t driver = atoi((const char*)filebuf_ptr +8);      // /.drvset012 = 12
       uint32_t fsize = filebuf_ptr[15] << 8 | filebuf_ptr[14];  // Tar header settings size
       filebuf_ptr += 16;                           // Start of file settings
-      uint32_t buffer_crc32 = filebuf_ptr[3] << 24 | filebuf_ptr[2] << 16 | filebuf_ptr[1] << 8 | filebuf_ptr[0];
-      bool valid_buffer = (GetCfgCrc32(filebuf_ptr +4, fsize -4) == buffer_crc32);
+      bool valid_buffer = true;
+      if (driver) {
+        uint32_t buffer_crc32 = filebuf_ptr[3] << 24 | filebuf_ptr[2] << 16 | filebuf_ptr[1] << 8 | filebuf_ptr[0];
+        valid_buffer = (GetCfgCrc32(filebuf_ptr +4, fsize -4) == buffer_crc32);
+      }
       if (valid_buffer) {
-        if (XdrvCallDriver(driver, FUNC_RESTORE_SETTINGS)) {
+        if (driver && (XdrvCallDriver(driver, FUNC_RESTORE_SETTINGS))) {
           // Restore live config data which will be saved to file before restart
 //          AddLog(LOG_LEVEL_DEBUG, PSTR("CFG: Restore driver %d"), driver);
           filebuf_ptr[1]++;                        // Force invalid crc32 to enable auto upgrade after restart
@@ -1120,6 +1123,7 @@ void SettingsDefaultSet2(void) {
   flag5.mqtt_switches |= MQTT_SWITCHES;
   flag5.mqtt_persistent |= ~MQTT_CLEAN_SESSION;
   flag6.mqtt_disable_sserialrec |= MQTT_DISABLE_SSERIALRECEIVED;
+  flag6.mqtt_disable_modbus |= MQTT_DISABLE_MODBUSRECEIVED;
 //  flag.mqtt_serial |= 0;
   flag.device_index_enable |= MQTT_POWER_FORMAT;
   flag3.time_append_timezone |= MQTT_APPEND_TIMEZONE;
@@ -1635,7 +1639,7 @@ void SettingsDelta(void) {
       memset(&Settings->sensors, 0xFF, 16);  // Enable all possible sensors
     }
     if (Settings->version < 0x09050004) {
-      Settings->ex_energy_kWhtotal = Settings->ipv4_address[4];
+      Settings->power_lock = Settings->ipv4_address[4];
       ParseIPv4(&Settings->ipv4_address[4], PSTR(WIFI_DNS2));
     }
     if (Settings->version < 0x09050005) {
@@ -1660,7 +1664,7 @@ void SettingsDelta(void) {
     if (Settings->version < 0x09050009) {  // 9.5.0.9
       memset(&Settings->energy_kWhtoday_ph, 0, 36);
       memset(&RtcSettings.energy_kWhtoday_ph, 0, 24);
-      Settings->energy_kWhtotal_ph[0] = Settings->ex_energy_kWhtotal;
+      Settings->energy_kWhtotal_ph[0] = Settings->power_lock;
       Settings->energy_kWhtoday_ph[0] = Settings->energy_power_calibration2;  // = ex_energy_kWhtoday
       Settings->energy_kWhyesterday_ph[0] = Settings->energy_voltage_calibration2;  // = ex_energy_kWhyesterday
       RtcSettings.energy_kWhtoday_ph[0] = RtcSettings.ex_energy_kWhtoday;
@@ -1761,6 +1765,16 @@ void SettingsDelta(void) {
     }
     if (Settings->version < 0x0D000003) {  // 13.0.0.3
       Settings->battery_level_percent = 101;
+    }
+/*    
+#if (LANGUAGE_LCID == 1049)
+    if (Settings->version < 0x0D020003) {  // 13.2.0.3
+      SettingsUpdateText(SET_CANVAS, PSTR("linear-gradient(#F02 7%,#F93,#FF4,#082,#00F,#708 93%)"));
+    }
+#endif
+*/
+    if (Settings->version < 0x0D040004) {  // 13.4.0.4
+      Settings->power_lock = 0;
     }
 
     Settings->version = TASMOTA_VERSION;

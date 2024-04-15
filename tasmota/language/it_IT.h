@@ -28,7 +28,7 @@
  * Use online command StateText to translate ON, OFF, HOLD and TOGGLE.
  * Use online command Prefix to translate cmnd, stat and tele.
  *
- * Updated until v9.4.0.1 - Last update 15.10.2023
+ * Updated until v9.4.0.1 - Last update 27.03.2024
 \*********************************************************************/
 
 #define LANGUAGE_MODULE_NAME         // Enable to display "Module Generic" (ie Spanish), Disable to display "Generic Module" (ie English)
@@ -57,6 +57,7 @@
 #define D_AP                   "AP"                   // Access Point
 #define D_AS                   "come"
 #define D_AUTO                 "AUTO"
+#define D_BATTERY              "Batteria"
 #define D_BATT                 "Batt"                 // Short for Battery
 #define D_BATTERY_CHARGE       "Carica"               // Battery charge in %
 #define D_BLINK                "Lampeggia"
@@ -118,6 +119,7 @@
 #define D_GROUP                "Gruppo"
 #define D_HOST                 "Host"
 #define D_HALL_EFFECT          "Effetto hall"
+#define D_HEATINDEX            "Indice calore"
 #define D_HOSTNAME             "Nome host"
 #define D_HUMIDITY             "Umidità"
 #define D_ILLUMINANCE          "Illuminazione"
@@ -166,7 +168,6 @@
 #define D_RESTART              "Riavvia"
 #define D_RESTARTING           "Riavvio"
 #define D_RESTART_REASON       "Causa riavvio"
-#define D_RESTORE              "ripristino"
 #define D_RETAINED             "salvato"
 #define D_RULE                 "Regola"
 #define D_SAVE                 "Salva"
@@ -192,7 +193,6 @@
 #define D_TWILIGHT_ASTRONOMICAL "astronomico"
 #define D_TWILIGHT_CIVIL       "civile"
 #define D_TWILIGHT_NAUTICAL    "nautico"
-#define D_UPGRADE              "aggiornamento"
 #define D_UPLOAD               "Caricamento"
 #define D_UPTIME               "Tempo accensione"
 #define D_USED                 "usati"
@@ -276,7 +276,8 @@
 #define D_CONFIGURATION        "Impostazioni"
 #define D_INFORMATION          "Informazioni"
 #define D_FIRMWARE_UPGRADE     "Aggiorna firmware"
-#define D_MANAGEMENT           "Console"
+#define D_MANAGEMENT           "Strumenti"
+#define D_GPIO_VIEWER          "Visualizzatore GPIO"
 #define D_CONSOLE              "Console"
 #define D_CONFIRM_RESTART      "Conferma riavvio"
 
@@ -290,6 +291,7 @@
 #define D_RESET_CONFIGURATION          "Impostazioni predefinite"
 #define D_BACKUP_CONFIGURATION         "Salva impostazioni"
 #define D_RESTORE_CONFIGURATION        "Carica impostazioni"
+#define D_START_RESTORE                "Avvia ripristino"
 #define D_MAIN_MENU                    "Menu principale"
 
 #define D_MODULE_PARAMETERS  "Parametri modulo"
@@ -530,22 +532,44 @@
 #define D_CONFIGURE_DALI                  "DALI - Config"
 
 // xdrv_03_energy.ino
-#define D_ENERGY_TODAY      "Energia - oggi"
-#define D_ENERGY_YESTERDAY  "Energia  - ieri"
-#define D_ENERGY_TOTAL      "Energia - totale"
+#define D_ENERGY_TODAY                    "Energia - oggi"
+#define D_ENERGY_YESTERDAY                "Energia - ieri"
+#define D_ENERGY_TOTAL                    "Energia - totale"
+
+// xsns_100_ina3221.ino
+#define  D_UNIT_CHARGE                    "Ah"
+#define  D_CHARGE                         "Carica"
+#define  D_ENERGY                         "Energia"
 
 // xdrv_27_shutter.ino
-#define D_OPEN              "Apri"
-#define D_CLOSE             "Chiudi"
-#define D_DOMOTICZ_SHUTTER  "Serranda"
+#define D_OPEN                            "Apri"
+#define D_CLOSE                           "Chiudi"
+#define D_DOMOTICZ_SHUTTER                "Serranda"
 
 // xdrv_28_pcf8574.ino
-#define D_CONFIGURE_PCF8574   "PCF8574"
-#define D_PCF8574_PARAMETERS  "Parametri PCF8574"
-#define D_INVERT_PORTS        "Inverti porte"
-#define D_DEVICE              "Dispositivo"
-#define D_DEVICE_INPUT        "Ingresso"
-#define D_DEVICE_OUTPUT       "Uscita"
+#define D_CONFIGURE_PCF8574               "PCF8574"
+#define D_PCF8574_PARAMETERS              "Parametri PCF8574"
+#define D_INVERT_PORTS                    "Inverti porte"
+#define D_DEVICE                          "Dispositivo"
+#define D_DEVICE_INPUT                    "Ingresso"
+#define D_DEVICE_OUTPUT                   "Uscita"
+
+// xdrv_39_thermostat.ino, xdrv_85_esp32_ble_eq3_trv.ino
+#define D_THERMOSTAT                  "Termostato"
+#define D_THERMOSTAT_SET_POINT        "Temperatura impostata"
+#define D_THERMOSTAT_SENSOR           "Temperatura attuale"
+#define D_THERMOSTAT_GRADIENT         "Gradiente temperatura"
+#define D_THERMOSTAT_DUTY_CYCLE       "Ciclo lavoro"
+#define D_THERMOSTAT_VALVE_POSITION   "Posizione valvola"
+#define D_THERMOSTAT_CYCLE_TIME       "Tempo ciclo"
+#define D_THERMOSTAT_PI_AUTOTUNE      "Regolazione automatica  PI"
+#define D_THERMOSTAT_CONTROL_METHOD   "Metodo controllo"
+#define D_THERMOSTAT_RAMP_UP          "Rampa"
+#define D_THERMOSTAT_PI               "PI"
+#define D_THERMOSTAT_AUTOTUNE         "Regolazione automatica"
+#define D_THERMOSTAT_RAMP_UP_HYBRID   "Rampa (ibrida)"
+#define D_THERMOSTAT_PI_HYBRID        "PI (ibdrida)"
+#define D_THERMOSTAT_AUTOTUNE_HYBRID  "Regolazione automatica (ibrida)"
 
 // xsns_05_ds18b20.ino
 #define D_SENSOR_BUSY       "Sensore occupato"
@@ -688,6 +712,10 @@
 #define D_SENSOR_SPI_MOSI               "SPI - MOSI"
 #define D_SENSOR_SPI_CLK                "SPI - CLK"
 #define D_SENSOR_SDIO_CMD               "SDIO - CMD"
+#define D_GPIO_TS_SPI_CS                "TS - SPI CS"
+#define D_GPIO_TS_RST                   "TS - RST"
+#define D_GPIO_TS_IRQ                   "TS - IRQ"
+#define D_SENSOR_SDIO_CMD               "SDIO - CMD"
 #define D_SENSOR_SDIO_CLK               "SDIO - CLK"
 #define D_SENSOR_SDIO_D0                "SDIO - D0"
 #define D_SENSOR_SDIO_D1                "SDIO - D1"
@@ -758,6 +786,13 @@
 #define D_SENSOR_MAX31855_CLK           "MX31855 - CLK"
 #define D_SENSOR_MAX31855_DO            "MX31855 - DO"
 #define D_SENSOR_MAX31865_CS            "MX31865 - CS"
+#define D_GPIO_RN2XX3_TX                "RN2XX3 - TX"
+#define D_GPIO_RN2XX3_RX                "RN2XX3 - RX"
+#define D_GPIO_RN2XX3_RST               "RN2XX3 - Rst"
+#define D_GPIO_LORA_CS                  "LoRa - CS"
+#define D_GPIO_LORA_RST                 "LoRa - Rst"
+#define D_GPIO_LORA_BUSY                "LoRa - Busy"
+#define D_GPIO_LORA_DI                  "LoRa - DIO"    // Suffix "0","1","2"
 #define D_SENSOR_NRG_SEL                "HLWBL - SEL"     // Suffix "i"
 #define D_SENSOR_NRG_CF1                "HLWBL - CF1"
 #define D_SENSOR_HLW_CF                 "HLW8012 - CF"
@@ -942,6 +977,7 @@
 #define D_SENSOR_BIOPDU_PZEM016_RX      "BioPDU PZEM016 - RX"
 #define D_SENSOR_BIOPDU_BIT             "BioPDU Bit"
 #define D_SENSOR_LOX_O2_RX              "LoxO2 - RX"
+#define D_GPIO_MAGIC_SWITCH             "MagicSwitch"
 
 // Units
 #define D_UNIT_AMPERE                     "A"
@@ -1203,7 +1239,12 @@
 #define D_NEOPOOL_PUMP_TIME_EXCEEDED      "tempo pompa superato"
 
 // xsns_106_gdk101.ino
-#define D_AVG_RAD_DOSE                    "Dose media radiazioni"
+//#define D_AVG_RAD_DOSE                  "Average Radiation Dose"
+#define D_AVG_RAD_DOSE                    "Radiazioni"
 #define D_UNIT_US_H                       "µSv/h"
+
+// ixrv92_pipsolar.ino
+#define D_SENSOR_PIPSOLAR_TX             "Pipsolar - TX"
+#define D_SENSOR_PIPSOLAR_RX             "Pipsolar - RX"
 
 #endif  // _LANGUAGE_IT_IT_H_

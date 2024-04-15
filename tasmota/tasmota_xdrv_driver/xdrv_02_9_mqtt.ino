@@ -342,7 +342,7 @@ void MqttInit(void) {
       String endpoint="https://global.azure-devices-provisioning.net/";
     #endif //USE_MQTT_AZURE_DPS_SCOPE_ENDPOINT
 
-    String MACAddress = WiFi.macAddress();
+    String MACAddress = WiFiHelper::macAddress();
     MACAddress.replace(":", "");
 
     AddLog(LOG_LEVEL_DEBUG, PSTR(D_LOG_MQTT "DPS register for %s, scope %s to %s."), MACAddress.c_str(), dPSScopeId.c_str(), endpoint.c_str());
@@ -476,6 +476,7 @@ void MqttSubscribeLib(const char *topic) {
   String realTopicString = "devices/" + String(SettingsText(SET_MQTT_CLIENT));
   realTopicString += "/messages/devicebound/#";
   MqttClient.subscribe(realTopicString.c_str());
+  MqttClient.subscribe("$iothub/methods/POST/#");
   SettingsUpdateText(SET_MQTT_FULLTOPIC, SettingsText(SET_MQTT_CLIENT));
   SettingsUpdateText(SET_MQTT_TOPIC, SettingsText(SET_MQTT_CLIENT));
 #else
@@ -577,6 +578,25 @@ void MqttDataHandler(char* mqtt_topic, uint8_t* mqtt_data, unsigned int data_len
 
   char topic[TOPSZ];
 #ifdef USE_MQTT_AZURE_IOT
+  #ifdef USE_AZURE_DIRECT_METHOD 
+      String fullTopicString = String(mqtt_topic);
+      int startOfMethod = fullTopicString.indexOf("methods/POST");
+      int endofMethod = fullTopicString.indexOf("/?$rid");
+      String req_id = fullTopicString.substring(endofMethod + 7);
+      if (startOfMethod == -1){
+        AddLog(LOG_LEVEL_ERROR, PSTR(D_LOG_MQTT "Azure IoT Hub message without a method."));
+        return;
+      }
+      String newMethod = fullTopicString.substring(startOfMethod + 12,endofMethod);
+      strlcpy(topic, newMethod.c_str(), sizeof(topic));
+      mqtt_data[data_len] = 0;
+      JsonParser mqtt_json_data((char*) mqtt_data);
+      JsonParserObject message_object = mqtt_json_data.getRootObject();
+      String mqtt_data_str= message_object.getStr("payload","");
+      strncpy(reinterpret_cast<char*>(mqtt_data),mqtt_data_str.c_str(),data_len);
+      mqtt_data[data_len] = 0;
+
+  #else
   // for Azure, we read the topic from the property of the message
   String fullTopicString = String(mqtt_topic);
   String toppicUpper = fullTopicString;
@@ -593,6 +613,7 @@ void MqttDataHandler(char* mqtt_topic, uint8_t* mqtt_data, unsigned int data_len
     return;
   }
   strlcpy(topic, newTopic.c_str(), sizeof(topic));
+  #endif
 #else
   strlcpy(topic, mqtt_topic, sizeof(topic));
 #endif  // USE_MQTT_AZURE_IOT
@@ -624,6 +645,11 @@ void MqttDataHandler(char* mqtt_topic, uint8_t* mqtt_data, unsigned int data_len
   if (Mqtt.disable_logging) {
     TasmotaGlobal.masterlog_level = LOG_LEVEL_NONE;  // Enable logging
   }
+  #ifdef USE_AZURE_DIRECT_METHOD // Send response for the direct method
+  String response_topic = "$iothub/methods/res/200/?$rid=" + req_id;
+  String payload = "{\"status\": \"success\"}";
+  MqttClient.publish(response_topic.c_str(),payload.c_str());
+  #endif
 }
 
 /*********************************************************************************************/
@@ -980,7 +1006,8 @@ void MqttConnected(void) {
           ResponseAppend_P(PSTR(",\"" D_JSON_IP6_LOCAL "\":\"%s\""), WifiGetIPv6LinkLocalStr().c_str());
 #endif  // USE_IPV6
         }
-#if defined(ESP32) && CONFIG_IDF_TARGET_ESP32 && defined(USE_ETHERNET)
+//#if defined(ESP32) && CONFIG_IDF_TARGET_ESP32 && defined(USE_ETHERNET)
+#if defined(ESP32) && defined(USE_ETHERNET)
         if (static_cast<uint32_t>(EthernetLocalIP()) != 0) {
           ResponseAppend_P(PSTR(",\"Ethernet\":{\"" D_CMND_HOSTNAME "\":\"%s\",\"" D_CMND_IPADDRESS "\":\"%_I\"}"),
             EthernetHostname(), (uint32_t)EthernetLocalIP());
@@ -1974,16 +2001,16 @@ void HandleMqttConfiguration(void)
   WSContentStart_P(PSTR(D_CONFIGURE_MQTT));
   WSContentSendStyle();
   WSContentSend_P(HTTP_FORM_MQTT1,
-    SettingsText(SET_MQTT_HOST),
+    SettingsTextEscaped(SET_MQTT_HOST).c_str(),
     Settings->mqtt_port,
 #ifdef USE_MQTT_TLS
     Mqtt.mqtt_tls ? PSTR(" checked") : "",      // SetOption103 - Enable MQTT TLS
 #endif // USE_MQTT_TLS
-    Format(str, PSTR(MQTT_CLIENT_ID), sizeof(str)), PSTR(MQTT_CLIENT_ID), SettingsText(SET_MQTT_CLIENT));
+    Format(str, PSTR(MQTT_CLIENT_ID), sizeof(str)), PSTR(MQTT_CLIENT_ID), SettingsTextEscaped(SET_MQTT_CLIENT).c_str());
   WSContentSend_P(HTTP_FORM_MQTT2,
-    (!strlen(SettingsText(SET_MQTT_USER))) ? "0" : SettingsText(SET_MQTT_USER),
-    Format(str, PSTR(MQTT_TOPIC), sizeof(str)), PSTR(MQTT_TOPIC), SettingsText(SET_MQTT_TOPIC),
-    PSTR(MQTT_FULLTOPIC), PSTR(MQTT_FULLTOPIC), SettingsText(SET_MQTT_FULLTOPIC));
+    (!strlen(SettingsText(SET_MQTT_USER))) ? "0" : SettingsTextEscaped(SET_MQTT_USER).c_str(),
+    Format(str, PSTR(MQTT_TOPIC), sizeof(str)), PSTR(MQTT_TOPIC), SettingsTextEscaped(SET_MQTT_TOPIC).c_str(),
+    PSTR(MQTT_FULLTOPIC), PSTR(MQTT_FULLTOPIC), SettingsTextEscaped(SET_MQTT_FULLTOPIC).c_str());
   WSContentSend_P(HTTP_FORM_END);
   WSContentSpaceButton(BUTTON_CONFIGURATION);
   WSContentStop();
@@ -2032,6 +2059,9 @@ bool Xdrv02(uint32_t function)
         break;
       case FUNC_PRE_INIT:
         MqttInit();
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

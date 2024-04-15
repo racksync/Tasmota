@@ -57,6 +57,7 @@
 #define D_AP "AP"                    // Access Point
 #define D_AS "als"
 #define D_AUTO "AUTO"
+#define D_BATTERY "Battery"
 #define D_BATT "Batt"                // Short for Battery
 #define D_BATTERY_CHARGE "Lading"    // Battery charge in %
 #define D_BLINK "Knipper"
@@ -118,6 +119,7 @@
 #define D_GROUP "Groep"
 #define D_HOST "Host"
 #define D_HALL_EFFECT "Hall Effect"
+#define D_HEATINDEX "Heat index"
 #define D_HOSTNAME "Hostnaam"
 #define D_HUMIDITY "Luchtvochtigheid"
 #define D_ILLUMINANCE "Verlichtingssterkte"
@@ -166,7 +168,6 @@
 #define D_RESTART "Herstart"
 #define D_RESTARTING "Herstarten"
 #define D_RESTART_REASON "Reden herstart"
-#define D_RESTORE "herstellen"
 #define D_RETAINED "behouden"
 #define D_RULE "Regel"
 #define D_SAVE "Opslaan"
@@ -192,7 +193,6 @@
 #define D_TWILIGHT_ASTRONOMICAL "Astronomical"
 #define D_TWILIGHT_CIVIL "Civil"
 #define D_TWILIGHT_NAUTICAL "Nautical"
-#define D_UPGRADE "opwaarderen"
 #define D_UPLOAD "Verzenden"
 #define D_UPTIME "Bedrijfstijd"
 #define D_USED "used"
@@ -276,7 +276,8 @@
 #define D_CONFIGURATION "Configuratie"
 #define D_INFORMATION "Informatie"
 #define D_FIRMWARE_UPGRADE "Opwaarderen"
-#define D_MANAGEMENT "Consoles"
+#define D_MANAGEMENT "Tools"
+#define D_GPIO_VIEWER "GPIO Viewer"
 #define D_CONSOLE "Console"
 #define D_CONFIRM_RESTART "Bevestig herstart"
 
@@ -290,6 +291,7 @@
 #define D_RESET_CONFIGURATION "Reset Configuratie"
 #define D_BACKUP_CONFIGURATION "Bewaar Configuratie"
 #define D_RESTORE_CONFIGURATION "Herstel Configuration"
+#define D_START_RESTORE "Start restore"
 #define D_MAIN_MENU "Hoofdmenu"
 
 #define D_MODULE_PARAMETERS "Module parameters"
@@ -534,6 +536,11 @@
 #define D_ENERGY_YESTERDAY "Verbruik gisteren"
 #define D_ENERGY_TOTAL "Verbruik totaal"
 
+// xsns_100_ina3221.ino
+#define  D_UNIT_CHARGE                    "Ah"
+#define  D_CHARGE                         "Charge"    
+#define  D_ENERGY                         "Energy"
+
 // xdrv_27_shutter.ino
 #define D_OPEN "Openen"
 #define D_CLOSE "Sluiten"
@@ -546,6 +553,23 @@
 #define D_DEVICE "Apparaat"
 #define D_DEVICE_INPUT "Ingang"
 #define D_DEVICE_OUTPUT "Uitgang"
+
+// xdrv_39_thermostat.ino, xdrv_85_esp32_ble_eq3_trv.ino
+#define D_THERMOSTAT                  "Thermostat"
+#define D_THERMOSTAT_SET_POINT        "Set Point Temperature"
+#define D_THERMOSTAT_SENSOR           "Current Temperature"
+#define D_THERMOSTAT_GRADIENT         "Gradient Temperature"
+#define D_THERMOSTAT_DUTY_CYCLE       "Duty cycle"
+#define D_THERMOSTAT_VALVE_POSITION   "Valve Position"
+#define D_THERMOSTAT_CYCLE_TIME       "Cycle time"
+#define D_THERMOSTAT_PI_AUTOTUNE      "PI Auto tuning"
+#define D_THERMOSTAT_CONTROL_METHOD   "Control method"
+#define D_THERMOSTAT_RAMP_UP          "Ramp up"
+#define D_THERMOSTAT_PI               "PI"
+#define D_THERMOSTAT_AUTOTUNE         "Autotune"
+#define D_THERMOSTAT_RAMP_UP_HYBRID   "Ramp up (Hybrid)"
+#define D_THERMOSTAT_PI_HYBRID        "PI (Hybrid)"
+#define D_THERMOSTAT_AUTOTUNE_HYBRID  "Autotune (Hybrid)"
 
 // xsns_05_ds18b20.ino
 #define D_SENSOR_BUSY "Sensor bezet"
@@ -688,6 +712,10 @@
 #define D_SENSOR_SPI_MOSI      "SPI MOSI"
 #define D_SENSOR_SPI_CLK       "SPI CLK"
 #define D_SENSOR_SDIO_CMD      "SDIO CMD"
+#define D_GPIO_TS_SPI_CS       "TS SPI CS"
+#define D_GPIO_TS_RST          "TS RST"
+#define D_GPIO_TS_IRQ          "TS IRQ"
+#define D_SENSOR_SDIO_CMD      "SDIO CMD"
 #define D_SENSOR_SDIO_CLK      "SDIO CLK"
 #define D_SENSOR_SDIO_D0       "SDIO D0"
 #define D_SENSOR_SDIO_D1       "SDIO D1"
@@ -758,6 +786,13 @@
 #define D_SENSOR_MAX31855_CLK  "MX31855 CLK"
 #define D_SENSOR_MAX31855_DO   "MX31855 DO"
 #define D_SENSOR_MAX31865_CS   "MX31865 CS"
+#define D_GPIO_RN2XX3_TX       "RN2XX3 Tx"
+#define D_GPIO_RN2XX3_RX       "RN2XX3 Rx"
+#define D_GPIO_RN2XX3_RST      "RN2XX3 Rst"
+#define D_GPIO_LORA_CS         "LoRa CS"
+#define D_GPIO_LORA_RST        "LoRa Rst"
+#define D_GPIO_LORA_BUSY       "LoRa Busy"
+#define D_GPIO_LORA_DI         "LoRa DIO"    // Suffix "0","1","2"
 #define D_SENSOR_NRG_SEL       "HLWBL SEL"  // Suffix "i"
 #define D_SENSOR_NRG_CF1       "HLWBL CF1"
 #define D_SENSOR_HLW_CF        "HLW8012 CF"
@@ -942,6 +977,7 @@
 #define D_SENSOR_BIOPDU_PZEM016_RX "BioPDU PZEM016 Rx"
 #define D_SENSOR_BIOPDU_BIT    "BioPDU Bit"
 #define D_SENSOR_LOX_O2_RX     "LoxO2 RX"
+#define D_GPIO_MAGIC_SWITCH "MagicSwitch"
 
 // Units
 #define D_UNIT_AMPERE "A"
@@ -1205,5 +1241,9 @@
 // xsns_106_gdk101.ino
 #define D_AVG_RAD_DOSE                    "gemiddelde stralingsdosis"
 #define D_UNIT_US_H                       "µSv/h"
+
+// ixrv92_pipsolar.ino
+#define D_SENSOR_PIPSOLAR_TX             "Pipsolar TX"
+#define D_SENSOR_PIPSOLAR_RX             "Pipsolar RX"
 
 #endif  // _LANGUAGE_NL_NL_H_

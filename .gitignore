@@ -19,8 +19,13 @@ data
 unpacked_fs
 unpacked_boards
 tasmota/user_config_override.h
+<<<<<<< HEAD
 tasmota/user_config_override_official.h
 tasmota/user_config_override_untested.h
+=======
+variants
+variants3
+>>>>>>> 2a0c53a3828368c3e460037ab9e2877a3b41378a
 build
 #build_output/*
 build_output/tasmota*
@@ -41,5 +46,6 @@ lib/libesp32/berry/berry
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/settings.json
+.vscode/extensions.json
 *.bak
 *.code-workspace

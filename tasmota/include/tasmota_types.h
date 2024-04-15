@@ -190,9 +190,9 @@ typedef union {                            // Restricted by MISRA-C Rule 18.4 bu
     uint32_t berry_light_scheme : 1;       // bit 8  (v12.5.0.3) - SetOption154 - (Berry) Handle berry led using RMT0 as additional WS2812 scheme
     uint32_t zcfallingedge : 1;            // bit 9  (v13.0.0.1) - SetOption155 - (ZCDimmer) Enable rare falling Edge dimmer instead of leading edge
     uint32_t sen5x_passive_mode : 1;       // bit 10 (v13.1.0.1) - SetOption156 - (Sen5x) Run in passive mode when there is another I2C master (e.g. Ikea Vindstyrka), i.e. do not set up Sen5x sensor, higher polling interval
-    uint32_t spare11 : 1;                  // bit 11
-    uint32_t spare12 : 1;                  // bit 12
-    uint32_t spare13 : 1;                  // bit 13
+    uint32_t neopool_outputsensitive : 1;  // bit 11 (v13.2.0.1) - SetOption157 - (NeoPool) Output sensitive data (1)
+    uint32_t mqtt_disable_modbus : 1;      // bit 12 (v13.3.0.5) - SetOption158 - (MQTT) Disable publish ModbusReceived MQTT messages (1), you must use event trigger rules instead
+    uint32_t counter_both_edges : 1;       // bit 13 (v13.3.0.5) - SetOption159 - (Counter) Enable counting on both rising and falling edge (1)
     uint32_t spare14 : 1;                  // bit 14
     uint32_t spare15 : 1;                  // bit 15
     uint32_t spare16 : 1;                  // bit 16
@@ -264,8 +264,7 @@ typedef union {
     uint32_t spare21 : 1;                  // bit 21
     uint32_t spare22 : 1;                  // bit 22
     uint32_t spare23 : 1;                  // bit 23
-    uint32_t spare24 : 1;                  // bit 24
-    uint32_t spare25 : 1;                  // bit 25
+    uint32_t FTP_Mode : 2;                  // bit 24, 25
     uint32_t tariff_forced : 2;            // bit 26..27 (v12.4.0.2) - Energy forced tariff : 0=tariff change on time, 1|2=tariff forced
     uint32_t sunrise_dawn_angle : 2;       // bits 28/29 (v12.1.1.4) -
     uint32_t temperature_set_res : 2;      // bits 30/31 (v9.3.1.4) - (Tuya)
@@ -858,9 +857,7 @@ typedef struct {
   uint16_t      flowratemeter_calibration[2];// F78
   int32_t       energy_kWhexport_ph[3];    // F7C
   uint32_t      eth_ipv4_address[5];       // F88
-
-  uint32_t      ex_energy_kWhtotal;        // F9C
-
+  uint32_t      power_lock;                // F9C
   SBitfield1    sbflag1;                   // FA0
   TeleinfoCfg   teleinfo;                  // FA4
   uint64_t      rf_protocol_mask;          // FA8
