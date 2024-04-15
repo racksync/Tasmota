@@ -803,7 +803,7 @@ void EnergyMarginCheck(void) {
           ResponseTime_P(PSTR(",\"" D_JSON_MAXPOWERREACHED "\":%d}"), energy_power_u);
           MqttPublishPrefixTopicRulesProcess_P(STAT, S_RSLT_WARNING);
           EnergyMqttShow();
-          SetAllPower(POWER_ALL_OFF, SRC_MAXPOWER);
+          SetAllPower(POWER_OFF_FORCE, SRC_MAXPOWER);
           if (!Energy->mplr_counter) {
             Energy->mplr_counter = Settings->param[P_MAX_POWER_RETRY] +1;  // SetOption33 - Max Power Retry count
           }
@@ -830,7 +830,7 @@ void EnergyMarginCheck(void) {
             ResponseTime_P(PSTR(",\"" D_JSON_MAXPOWERREACHEDRETRY "\":\"%s\"}"), GetStateText(0));
             MqttPublishPrefixTopicRulesProcess_P(STAT, S_RSLT_WARNING);
             EnergyMqttShow();
-            SetAllPower(POWER_ALL_OFF, SRC_MAXPOWER);
+            SetAllPower(POWER_OFF_FORCE, SRC_MAXPOWER);
           }
         }
       }
@@ -851,7 +851,7 @@ void EnergyMarginCheck(void) {
       ResponseTime_P(PSTR(",\"" D_JSON_MAXENERGYREACHED "\":%3_f}"), &Energy->daily_sum);
       MqttPublishPrefixTopicRulesProcess_P(STAT, S_RSLT_WARNING);
       EnergyMqttShow();
-      SetAllPower(POWER_ALL_OFF, SRC_MAXENERGY);
+      SetAllPower(POWER_OFF_FORCE, SRC_MAXENERGY);
     }
   }
   EnergyFmtFree();
@@ -876,7 +876,7 @@ void EnergyEverySecond(void) {
 
       AddLog(LOG_LEVEL_DEBUG, PSTR("NRG: Temperature %1_f"), &TasmotaGlobal.temperature_celsius);
 
-      SetAllPower(POWER_ALL_OFF, SRC_OVERTEMP);
+      SetAllPower(POWER_OFF_FORCE, SRC_OVERTEMP);
     }
   }
 
@@ -893,10 +893,9 @@ void EnergyEverySecond(void) {
           Energy->active_power[i] = 0;
           if (!isnan(Energy->apparent_power[i])) { Energy->apparent_power[i] = 0; }
           if (!isnan(Energy->reactive_power[i])) { Energy->reactive_power[i] = 0; }
-          if (!isnan(Energy->frequency[i])) { Energy->frequency[i] = 0; }
-          if (!isnan(Energy->power_factor[i])) { Energy->power_factor[i] = 0; }
-          if (!isnan(Energy->export_active[i])) { Energy->export_active[i] = 0; }
-
+          if (!isnan(Energy->frequency[i]))      { Energy->frequency[i] = 0; }
+          if (!isnan(Energy->power_factor[i]))   { Energy->power_factor[i] = 0; }
+          if (!isnan(Energy->export_active[i]))  { Energy->export_active[i] = 0; }
           data_valid--;
         }
       }
@@ -1178,7 +1177,7 @@ void EnergyCommandCalSetResponse(uint32_t cal_type) {
 void EnergyCommandCalResponse(uint32_t cal_type) {
   Energy->command_code = cal_type;                     // Is XxxCal command too
   if (XnrgCall(FUNC_COMMAND)) {                        // XxxCal
-    Response_P(PSTR("{\"%s\":"), XdrvMailbox.command);
+    ResponseCmnd();
     EnergyCommandCalSetResponse(cal_type);
   }
 }
@@ -1379,9 +1378,6 @@ void EnergyDrvInit(void) {
   Energy = (tEnergy*)calloc(sizeof(tEnergy), 1);    // Need calloc to reset registers to 0/false
   if (!Energy) { return; }
 
-  EnergySettingsLoad(0);
-  EnergyRtcSettingsLoad();
-
   Energy->value = nullptr;
 //  Energy->voltage_common = false;
 //  Energy->frequency_common = false;
@@ -1399,9 +1395,13 @@ void EnergyDrvInit(void) {
   Energy->power_on = true;
 
   TasmotaGlobal.energy_driver = ENERGY_NONE;
-  XnrgCall(FUNC_PRE_INIT);             // Find first energy driver
+  XnrgCall(FUNC_PRE_INIT);              // Find first energy driver
   if (TasmotaGlobal.energy_driver) {
+    EnergySettingsLoad(0);
+    EnergyRtcSettingsLoad();
     AddLog(LOG_LEVEL_INFO, PSTR("NRG: Init driver %d"), TasmotaGlobal.energy_driver);
+//  } else {
+//    free(Energy);                       // No energy driver found so release memory
   }
 }
 
@@ -1579,10 +1579,10 @@ void EnergyShow(bool json) {
         ResponseAppend_P(PSTR(",\"" D_JSON_POWERFACTOR "\":%s"),
           EnergyFmt(power_factor, 2));
       }
-      if (!isnan(Energy->frequency[0])) {
-        ResponseAppend_P(PSTR(",\"" D_JSON_FREQUENCY "\":%s"),
-          EnergyFmt(Energy->frequency, Settings->flag2.frequency_resolution, frequency_common));
-      }
+    }
+    if (!isnan(Energy->frequency[0])) {
+      ResponseAppend_P(PSTR(",\"" D_JSON_FREQUENCY "\":%s"),
+        EnergyFmt(Energy->frequency, Settings->flag2.frequency_resolution, frequency_common));
     }
     if (Energy->voltage_available) {
       ResponseAppend_P(PSTR(",\"" D_JSON_VOLTAGE "\":%s"),
@@ -1666,7 +1666,7 @@ void EnergyShow(bool json) {
       Energy->gui_count = relay_show - Energy->gui_offset;
       if (Energy->gui_count > Energy->Settings.gui_cols) { Energy->gui_count = Energy->Settings.gui_cols; }
 
-      WSContentSend_P(PSTR("</table><hr/>"));        // Close current table as we will use different column count
+      WSContentSend_P(PSTR("</table>"));        // Close current table as we will use different column count
       bool label_o = voltage_common;
       if (ENERGY_DISPLAY_TABS == Energy->Settings.gui_display) {
         uint32_t tabs = (relay_show -1 + Energy->Settings.gui_cols) / Energy->Settings.gui_cols;
@@ -1701,11 +1701,9 @@ void EnergyShow(bool json) {
       if (Energy->voltage_available) {
         WSContentSend_PD(HTTP_SNS_VOLTAGE, WebEnergyFmt(Energy->voltage, Settings->flag2.voltage_resolution, voltage_common));
       }
-      if (!Energy->type_dc) {
-        if (!isnan(Energy->frequency[0])) {
-          WSContentSend_PD(PSTR("{s}" D_FREQUENCY "{m}%s " D_UNIT_HERTZ "{e}"),
-            WebEnergyFmt(Energy->frequency, Settings->flag2.frequency_resolution, frequency_common));
-        }
+      if (!isnan(Energy->frequency[0])) {
+        WSContentSend_PD(PSTR("{s}" D_FREQUENCY "{m}%s " D_UNIT_HERTZ "{e}"),
+          WebEnergyFmt(Energy->frequency, Settings->flag2.frequency_resolution, frequency_common));
       }
       if (Energy->current_available) {
         WSContentSend_PD(HTTP_SNS_CURRENT, WebEnergyFmt(Energy->current, Settings->flag2.current_resolution));
@@ -1730,7 +1728,7 @@ void EnergyShow(bool json) {
       }
 
       XnrgCall(FUNC_WEB_COL_SENSOR);
-      WSContentSend_P(PSTR("</table><hr/>{t}"));    // {t} = <table style='width:100%'> - Define for next FUNC_WEB_SENSOR
+      WSContentSend_P(PSTR("</table>{t}"));    // {t} = <table style='width:100%'> - Define for next FUNC_WEB_SENSOR
       XnrgCall(FUNC_WEB_SENSOR);
     }
 #endif  // USE_WEBSERVER
@@ -1797,6 +1795,9 @@ bool Xdrv03(uint32_t function)
         break;
       case FUNC_NETWORK_DOWN:
         XnrgCall(FUNC_NETWORK_DOWN);
+        break;
+      case FUNC_ACTIVE:
+        result = true;
         break;
     }
   }

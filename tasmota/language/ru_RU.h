@@ -58,6 +58,7 @@
 #define D_AP "AP"                    // Access Point
 #define D_AS "как"
 #define D_AUTO "АВТО"
+#define D_BATTERY "Battery"
 #define D_BATT "Batt"                // Short for Battery
 #define D_BATTERY_CHARGE "Charge"   // Battery charge in %
 #define D_BLINK "Мигать"
@@ -119,6 +120,7 @@
 #define D_GROUP "Группа"
 #define D_HOST "Хост"
 #define D_HALL_EFFECT "Hall Effect"
+#define D_HEATINDEX "Heat index"
 #define D_HOSTNAME "Имя хоста"
 #define D_HUMIDITY "Влажность"
 #define D_ILLUMINANCE "Освещенность"
@@ -167,7 +169,6 @@
 #define D_RESTART "Перезагрузка"
 #define D_RESTARTING "Перезагрузка"
 #define D_RESTART_REASON "Причина перезагрузки"
-#define D_RESTORE "восстановление"
 #define D_RETAINED "нераспред."
 #define D_RULE "Правило"
 #define D_SAVE "Сохранить"
@@ -193,7 +194,6 @@
 #define D_TWILIGHT_ASTRONOMICAL "Astronomical"
 #define D_TWILIGHT_CIVIL "Civil"
 #define D_TWILIGHT_NAUTICAL "Nautical"
-#define D_UPGRADE "обновление"
 #define D_UPLOAD "Загрузить"
 #define D_UPTIME "Аптайм"
 #define D_USED "использовано"
@@ -278,6 +278,7 @@
 #define D_INFORMATION "Информация"
 #define D_FIRMWARE_UPGRADE "Обновление прошивки"
 #define D_MANAGEMENT "Управление"
+#define D_GPIO_VIEWER "GPIO Viewer"
 #define D_CONSOLE "Консоль"
 #define D_CONFIRM_RESTART "Перезагрузить устройство?"
 
@@ -291,6 +292,7 @@
 #define D_RESET_CONFIGURATION "Сброс настроек"
 #define D_BACKUP_CONFIGURATION "Резервное копирование настроек"
 #define D_RESTORE_CONFIGURATION "Восстановление настроек"
+#define D_START_RESTORE "Start restore"
 #define D_MAIN_MENU "Главное меню"
 
 #define D_MODULE_PARAMETERS "Настройки модуля"
@@ -535,6 +537,11 @@
 #define D_ENERGY_YESTERDAY "Энергия вчера"
 #define D_ENERGY_TOTAL "Энергия всего"
 
+// xsns_100_ina3221.ino
+#define  D_UNIT_CHARGE                    "Ah"
+#define  D_CHARGE                         "Charge"    
+#define  D_ENERGY                         "Energy"
+
 // xdrv_27_shutter.ino
 #define D_OPEN "Отрыть"
 #define D_CLOSE "Закрыть"
@@ -547,6 +554,23 @@
 #define D_DEVICE "Устройство"
 #define D_DEVICE_INPUT "Вход"
 #define D_DEVICE_OUTPUT "Выход"
+
+// xdrv_39_thermostat.ino, xdrv_85_esp32_ble_eq3_trv.ino
+#define D_THERMOSTAT                  "Thermostat"
+#define D_THERMOSTAT_SET_POINT        "Set Point Temperature"
+#define D_THERMOSTAT_SENSOR           "Current Temperature"
+#define D_THERMOSTAT_GRADIENT         "Gradient Temperature"
+#define D_THERMOSTAT_DUTY_CYCLE       "Duty cycle"
+#define D_THERMOSTAT_VALVE_POSITION   "Valve Position"
+#define D_THERMOSTAT_CYCLE_TIME       "Cycle time"
+#define D_THERMOSTAT_PI_AUTOTUNE      "PI Auto tuning"
+#define D_THERMOSTAT_CONTROL_METHOD   "Control method"
+#define D_THERMOSTAT_RAMP_UP          "Ramp up"
+#define D_THERMOSTAT_PI               "PI"
+#define D_THERMOSTAT_AUTOTUNE         "Autotune"
+#define D_THERMOSTAT_RAMP_UP_HYBRID   "Ramp up (Hybrid)"
+#define D_THERMOSTAT_PI_HYBRID        "PI (Hybrid)"
+#define D_THERMOSTAT_AUTOTUNE_HYBRID  "Autotune (Hybrid)"
 
 // xsns_05_ds18b20.ino
 #define D_SENSOR_BUSY "Датчик DS18x20 занят"
@@ -689,6 +713,10 @@
 #define D_SENSOR_SPI_MOSI      "SPI MOSI"
 #define D_SENSOR_SPI_CLK       "SPI CLK"
 #define D_SENSOR_SDIO_CMD      "SDIO CMD"
+#define D_GPIO_TS_SPI_CS       "TS SPI CS"
+#define D_GPIO_TS_RST          "TS RST"
+#define D_GPIO_TS_IRQ          "TS IRQ"
+#define D_SENSOR_SDIO_CMD      "SDIO CMD"
 #define D_SENSOR_SDIO_CLK      "SDIO CLK"
 #define D_SENSOR_SDIO_D0       "SDIO D0"
 #define D_SENSOR_SDIO_D1       "SDIO D1"
@@ -759,6 +787,13 @@
 #define D_SENSOR_MAX31855_CLK  "MX31855 CLK"
 #define D_SENSOR_MAX31855_DO   "MX31855 DO"
 #define D_SENSOR_MAX31865_CS   "MX31865 CS"
+#define D_GPIO_RN2XX3_TX       "RN2XX3 Tx"
+#define D_GPIO_RN2XX3_RX       "RN2XX3 Rx"
+#define D_GPIO_RN2XX3_RST      "RN2XX3 Rst"
+#define D_GPIO_LORA_CS         "LoRa CS"
+#define D_GPIO_LORA_RST        "LoRa Rst"
+#define D_GPIO_LORA_BUSY       "LoRa Busy"
+#define D_GPIO_LORA_DI         "LoRa DIO"    // Suffix "0","1","2"
 #define D_SENSOR_NRG_SEL       "HLWBL SEL"  // Suffix "i"
 #define D_SENSOR_NRG_CF1       "HLWBL CF1"
 #define D_SENSOR_HLW_CF        "HLW8012 CF"
@@ -943,6 +978,7 @@
 #define D_SENSOR_BIOPDU_PZEM016_RX "BioPDU PZEM016 Rx"
 #define D_SENSOR_BIOPDU_BIT    "BioPDU Bit"
 #define D_SENSOR_LOX_O2_RX     "LoxO2 RX"
+#define D_GPIO_MAGIC_SWITCH "MagicSwitch"
 
 // Units
 #define D_UNIT_AMPERE "А"
@@ -1206,5 +1242,9 @@
 // xsns_106_gdk101.ino
 #define D_AVG_RAD_DOSE                    "средняя доза облучения"
 #define D_UNIT_US_H                       "µSv/h"
+
+// ixrv92_pipsolar.ino
+#define D_SENSOR_PIPSOLAR_TX             "Pipsolar TX"
+#define D_SENSOR_PIPSOLAR_RX             "Pipsolar RX"
 
 #endif  // _LANGUAGE_RU_RU_H_

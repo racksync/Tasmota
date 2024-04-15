@@ -18,6 +18,11 @@
 
 */
 #ifdef USE_MI_ESP32
+
+#pragma once
+
+#include <NimBLEDevice.h>
+
 /*********************************************************************************************\
  * structs and types
 \*********************************************************************************************/
@@ -141,6 +146,24 @@ struct ATCPacket_t{ //and PVVX
   };
 };
 
+union BTHome_info_t{
+  struct{
+    uint8_t encrypted:1;
+    uint8_t reserved:1;
+    uint8_t triggered:1;
+    uint8_t reserved2:2;
+    uint8_t version:2;
+  };
+  char byte_value;
+};
+
+struct BLERingBufferItem_t{
+  uint16_t returnCharUUID;
+  uint16_t handle;
+  uint32_t type;
+  uint8_t length;
+};
+
 #pragma pack(0)
 
 
@@ -149,29 +172,15 @@ struct MI32connectionContextBerry_t{
   NimBLEUUID charUUID;
   uint16_t returnCharUUID;
   uint16_t handle;
-  uint8_t MAC[6];
   uint8_t * buffer;
+  uint8_t MAC[6];
   uint8_t operation;
   uint8_t addrType;
   int error;
+  int32_t arg1;
+  bool hasArg1;
   bool oneOp;
   bool response;
-};
-
-struct MI32notificationBuffer_t{
-  uint8_t buffer[256];
-  uint16_t returnCharUUID;
-};
-
-struct BLEqueueBuffer_t{
-  union{
-    uint8_t *buffer;
-    int32_t value;
-  };
-  size_t length;
-  uint16_t returnCharUUID;
-  uint16_t handle;
-  uint16_t type;
 };
 
 struct {
@@ -226,7 +235,7 @@ struct {
 #ifdef USE_MI_EXT_GUI
   uint32_t widgetSlot;
 #ifdef USE_ENERGY_SENSOR
-  uint8_t *energy_history;
+  uint8_t energy_history[24];
 #endif //USE_ENERGY_SENSOR
 #endif //USE_MI_EXT_GUI
 
@@ -235,6 +244,7 @@ struct {
   void *beServerCB;
   uint8_t *beAdvBuf;
   uint8_t infoMsg = 0;
+  uint8_t role = 0;
 } MI32;
 
 struct mi_sensor_t{
@@ -295,9 +305,9 @@ struct mi_sensor_t{
   int RSSI;
   uint32_t lastTime;
   uint32_t lux;
-  uint8_t *lux_history;
+  uint8_t lux_history[24];
   float temp; //Flora, MJ_HT_V1, LYWSD0x, CGx
-  uint8_t *temp_history;
+  uint8_t temp_history[24];
   union {
     struct {
       uint8_t moisture;
@@ -306,8 +316,8 @@ struct mi_sensor_t{
     }; // Flora
     struct {
       float hum;
-      uint8_t *hum_history;
-    }; // MJ_HT_V1, LYWSD0x
+      uint8_t hum_history[24];
+    };
     struct {
       uint16_t events; //"alarms" since boot
       uint32_t NMT;    // no motion time in seconds for the MJYD2S and NLIGHT
@@ -355,8 +365,9 @@ void (*const MI32_Commands[])(void) PROGMEM = {&CmndMi32Key, &CmndMi32Name,&Cmnd
 #define PVVX        15
 #define YLKG08      16
 #define YLAI003     17
+#define BTHOME      18
 
-#define MI32_TYPES    17 //count this manually
+#define MI32_TYPES    18 //count this manually
 
 const uint16_t kMI32DeviceID[MI32_TYPES]={ 0x0098, // Flora
                                   0x01aa, // MJ_HT_V1
@@ -375,9 +386,10 @@ const uint16_t kMI32DeviceID[MI32_TYPES]={ 0x0098, // Flora
                                   0x944a, // PVVX -> this is a fake ID
                                   0x03b6, // YLKG08 and YLKG07 - version w/wo mains
                                   0x07bf, // YLAI003
+                                  0xb770, // BTHome -> fake ID
                                   };
 
-const char kMI32DeviceType[] PROGMEM = {"Flora|MJ_HT_V1|LYWSD02|LYWSD03|CGG1|CGD1|NLIGHT|MJYD2S|YLYK01|MHOC401|MHOC303|ATC|MCCGQ02|SJWS01L|PVVX|YLKG08|YLAI003"};
+const char kMI32DeviceType[] PROGMEM = {"Flora|MJ_HT_V1|LYWSD02|LYWSD03|CGG1|CGD1|NLIGHT|MJYD2S|YLYK01|MHOC401|MHOC303|ATC|MCCGQ02|SJWS01L|PVVX|YLKG08|YLAI003|BTHOME"};
 
 const char kMI32_ConnErrorMsg[] PROGMEM = "no Error|could not connect|did disconnect|got no service|got no characteristic|can not read|can not notify|can not write|did not write|notify time out";
 
@@ -474,7 +486,8 @@ const char HTTP_MI32_SCRIPT_1[] PROGMEM =
         "var d=document.createElement('div');"
         "d.innerHTML=r.trim();"
         "var old=eb(d.firstChild.id);"
-        "old.parentNode.replaceChild(d.firstChild, old);"
+        "if(old == null){eb('pr').appendChild(d.firstChild);}"
+        "else{old.parentNode.replaceChild(d.firstChild, old);}"
       "}"
     "})"
     //".catch((e) => {console.error(e);});" //optional
@@ -482,8 +495,14 @@ const char HTTP_MI32_SCRIPT_1[] PROGMEM =
 ;
 
 const char HTTP_MI32_STYLE[] PROGMEM =
-  "<style onload=setTimeout(setUp,500)>.parent {display: flex;flex-wrap: wrap;justify-content: center;}svg{float:inline-end;}"
-  ".box {flex: 0 1 335px;margin: 5px;padding: 5px;border-radius: 0.8rem;background-color: rgba(221, 221, 221, 0.2);}</style>";
+  "<style onload=setTimeout(setUp,500)>body{display:flex;flex-direction:column;}"
+  ".parent{display:grid;grid-template-columns:repeat(auto-fill,350px);grid-template-rows:repeat(auto-fill,220px);"
+  "grid-auto-rows:220px;grid-auto-columns:350px;gap:1rem;justify-content:center;}"
+  "svg{float:inline-end;}"
+  ".box{padding:10px;border-radius:0.8rem;background-color:rgba(221, 221, 221, 0.2);}"
+  "@media screen and (min-width: 720px){.wide{grid-column:span 2;grid-row:span 1;}.big {grid-column:span 2;grid-row:span 2;}}"
+  ".tall {grid-column:span 1;grid-row:span 2;}"
+  "</style>";
 
 const char HTTP_MI32_STYLE_SVG[] PROGMEM =
   "<svg height='0'><defs><linearGradient id='grd%u'  x1='0%%' y1='0%%' x2='0%%' y2='15%%'>"
@@ -491,12 +510,15 @@ const char HTTP_MI32_STYLE_SVG[] PROGMEM =
   "<stop offset='1' stop-color='rgba(%u, %u, %u, 0)'/></linearGradient></defs></svg>"
   ;
 
+const char HTTP_MI32_PARENT_BLE_ROLE[] PROGMEM = "None|Observer|Peripheral|Central";
+
 const char HTTP_MI32_PARENT_START[] PROGMEM =
-  "<div class='parent'>"
-      "<div class='box'><h2>MI32 Bridge</h2>"
-          "Observing <span id='numDev'>%u</span> devices<br>"
-          "Uptime: <span class='Ti'>%u</span> seconds<br>"
-          "Free Heap: %u kB"
+  "<div class='parent'id='pr'>"
+      "<div class='box tall'><h2>MI32 Bridge</h2>"
+          "Observing <span id='numDev'>%u</span> devices<br><br>"
+          "Uptime: <span class='Ti'>%u</span> seconds<br><br>"
+          "Free Heap: %u kB<br><br>"
+          "BLE Role: %s"
       "</div>";
 
 const char HTTP_MI32_WIDGET[] PROGMEM =

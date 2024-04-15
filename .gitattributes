@@ -16,3 +16,11 @@
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
 
+<<<<<<< HEAD
+=======
+# No changes for zip files
+*.zip binary
+*.autoconf binary
+*.bin binary
+*.tapp binary
+>>>>>>> 2a0c53a3828368c3e460037ab9e2877a3b41378a

@@ -21,6 +21,21 @@
 #define is_digit(c)     ((c) >= '0' && (c) <= '9')
 #define skip_space(s)   while (is_space(*(s))) { ++(s); }
 
+static int str_strncasecmp(const char *s1, const char *s2, size_t n)
+{
+    if (n == 0) return 0;
+
+    while (n-- != 0 && tolower(*s1) == tolower(*s2)) {
+        if (n == 0 || *s1 == '\0' || *s2 == '\0')
+            break;
+        s1++;
+        s2++;
+    }
+
+    return tolower(*(const unsigned char *)s1)
+        - tolower(*(const unsigned char *)s2);
+}
+
 typedef bint (*str_opfunc)(const char*, const char*, bint, bint);
 
 bstring* be_strcat(bvm *vm, bstring *s1, bstring *s2)
@@ -669,6 +684,17 @@ int be_str_format(bvm *vm)
                 }
                 break;
             }
+            case 'q': {
+                const char *s = be_toescape(vm, index, 'q');
+                int len = be_strlen(vm, index);
+                if (len > 100 && strlen(mode) == 2) {
+                    be_pushvalue(vm, index);
+                } else {
+                    snprintf(buf, sizeof(buf), "%s", s);
+                    be_pushstring(vm, buf);
+                }
+                break;
+            }
             default: /* error */
                 be_raise(vm, "runtime_error", be_pushfstring(vm,
                     "invalid option '%%%c' to 'format'", *p));
@@ -940,6 +966,60 @@ static int str_escape(bvm *vm)
     be_return_nil(vm);
 }
 
+static int str_startswith(bvm *vm)
+{
+    int top = be_top(vm);
+    if (top >= 2 && be_isstring(vm, 1) && be_isstring(vm, 2)) {
+        bbool case_insensitive = bfalse;
+        if (top >= 3 && be_isbool(vm, 3)) {
+            case_insensitive = be_tobool(vm, 3);
+        }
+        bbool result = bfalse;
+        const char *s = be_tostring(vm, 1);
+        const char *p = be_tostring(vm, 2);
+        size_t len = (size_t)be_strlen(vm, 2);
+        if (case_insensitive) {
+            if (str_strncasecmp(s, p, len) == 0) {
+                result = btrue;
+            }
+        } else {
+            if (strncmp(s, p, len) == 0) {
+                result = btrue;
+            }
+        }
+        be_pushbool(vm, result);
+        be_return(vm);
+    }
+    be_return_nil(vm);
+}
+
+static int str_endswith(bvm *vm)
+{
+    int top = be_top(vm);
+    if (top >= 2 && be_isstring(vm, 1) && be_isstring(vm, 2)) {
+        bbool case_insensitive = bfalse;
+        if (top >= 3 && be_isbool(vm, 3)) {
+            case_insensitive = be_tobool(vm, 3);
+        }
+        bbool result = bfalse;
+        const char *s = be_tostring(vm, 1);
+        const char *p = be_tostring(vm, 2);
+        size_t len = (size_t)be_strlen(vm, 2);
+        if (case_insensitive) {
+            if (str_strncasecmp(s + (int)strlen(s) - (int)len, p, len) == 0) {
+                result = btrue;
+            }
+        } else {
+            if (strncmp(s + (int)strlen(s) - (int)len, p, len) == 0) {
+                result = btrue;
+            }
+        }
+        be_pushbool(vm, result);
+        be_return(vm);
+    }
+    be_return_nil(vm);
+}
+
 #if !BE_USE_PRECOMPILED_OBJECT
 be_native_module_attr_table(string) {
     be_native_module_function("format", be_str_format),
@@ -954,6 +1034,8 @@ be_native_module_attr_table(string) {
     be_native_module_function("tr", str_tr),
     be_native_module_function("escape", str_escape),
     be_native_module_function("replace", str_replace),
+    be_native_module_function("startswith", str_startswith),
+    be_native_module_function("endswith", str_endswith),
 };
 
 be_define_native_module(string, NULL);
@@ -972,6 +1054,8 @@ module string (scope: global, depend: BE_USE_STRING_MODULE) {
     tr, func(str_tr)
     escape, func(str_escape)
     replace, func(str_replace)
+    startswith, func(str_startswith)
+    endswith, func(str_endswith)
 }
 @const_object_info_end */
 #include "../generate/be_fixed_string.h"

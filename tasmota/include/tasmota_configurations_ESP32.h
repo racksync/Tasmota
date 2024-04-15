@@ -21,6 +21,7 @@
 #define _TASMOTA_CONFIGURATIONS_ESP32_H_
 
 #ifdef ESP32
+#include "sdkconfig.h"
 
 /*********************************************************************************************\
  * [tasmota32x-safeboot.bin]
@@ -60,6 +61,7 @@
 //#undef USE_MQTT_TLS                              // Disable TLS support won't work as the MQTTHost is not set
 #undef USE_KNX                                   // Disable KNX IP Protocol Support
 //#undef USE_WEBSERVER                             // Disable Webserver
+#undef USE_GPIO_VIEWER                           // Enable GPIO Viewer to see realtime GPIO states (+5k6 code)
 #undef USE_ENHANCED_GUI_WIFI_SCAN                // Disable wifi scan output with BSSID (+0k5 code)
 #undef USE_WEBSEND_RESPONSE                      // Disable command WebSend response message (+1k code)
 #undef USE_EMULATION                             // Disable Wemo or Hue emulation
@@ -184,49 +186,14 @@
 #define USE_WEBSERVER
 #define USE_WEBCLIENT
 #define USE_WEBCLIENT_HTTPS
-#define USE_SERIAL_BRIDGE                        // Add support for software Serial Bridge console Tee (+2k code)
-#define USE_ETHERNET
+
+// FIX ME Safeboot for ESP32 and ESP32solo1 to big with Core 3.0.0
+//#if CONFIG_IDF_TARGET_ESP32
+//  #define USE_SERIAL_BRIDGE                        // Add support for software Serial Bridge console Tee (+2k code)
+//  #define USE_ETHERNET
+//#endif  // CONFIG_IDF_TARGET_ESP32
 
 #endif  // FIRMWARE_SAFEBOOT
-
-/*********************************************************************************************\
- * FIRMWARE_ARDUINO30
- * Provide an image which compiles with WiP Arduino 3.0.x
-\*********************************************************************************************/
-
-#ifdef FIRMWARE_ARDUINO30
-
-#ifndef CODE_IMAGE_STR
-  #define CODE_IMAGE_STR "arduino30"
-#endif
-
-
-#undef FIRMWARE_LITE                            // Disable tasmota-lite with no sensors
-#undef FIRMWARE_SENSORS                         // Disable tasmota-sensors with useful sensors enabled
-#undef FIRMWARE_KNX_NO_EMULATION                // Disable tasmota-knx with KNX but without Emulation
-#undef FIRMWARE_DISPLAYS                        // Disable tasmota-display with display drivers enabled
-#undef FIRMWARE_IR                              // Disable tasmota-ir with IR full protocols activated
-#undef FIRMWARE_WEBCAM
-#undef FIRMWARE_BLUETOOTH
-#undef FIRMWARE_LVGL
-#undef FIRMWARE_TASMOTA32
-
-
-// -- Optional modules ----------------------------
-#undef USE_SHUTTER                               // Disable Shutter support for up to 4 shutter with different motortypes (+6k code)
-
-#undef USE_IR_REMOTE                             // Disable IR driver
-#undef USE_AC_ZERO_CROSS_DIMMER                  // Disable support for AC_ZERO_CROSS_DIMMER
-
-#define USE_TLS
-#define USE_WEBSERVER
-#define USE_WEBCLIENT
-#define USE_WEBCLIENT_HTTPS
-#define USE_SERIAL_BRIDGE                        // Add support for software Serial Bridge console Tee (+2k code)
-#define USE_ETHERNET
-
-#endif  // FIRMWARE_ARDUINO30
-
 
 /*********************************************************************************************\
  * [tasmota32-webcam.bin]
@@ -295,19 +262,17 @@
 
 #define USE_SDCARD
 
-#define USE_ADC
+#ifndef USE_BERRY_ULP                              // potential performance gains with ULP
+  #define USE_ADC                                  // so do not use common ADC funtions in that case
+#endif
 //#undef USE_BERRY                                 // Disable Berry scripting language
-#if defined(USE_MI_HOMEKIT)                      // Switch between Homekit and full BLE driver
-  #define USE_MI_ESP32
-  #if(USE_MI_HOMEKIT != 1)                       // Enable(1)/ Disable(0) Homekit, only for the .c-file
-    #undef USE_MI_HOMEKIT
-  #endif // disable USE_MI_HOMEKIT
-#else
-  #define USE_ETHERNET                             // Add support for ethernet (+20k code)
-  #define USE_BLE_ESP32                          // Enable full BLE driver
+
+#define USE_ETHERNET                             // Add support for ethernet (+20k code)
+#ifndef USE_MI_EXT_GUI
+  #define USE_BLE_ESP32                            // Enable full BLE driver
   #define USE_EQ3_ESP32
-  #define USE_MI_ESP32                           // (ESP32 only) Add support for ESP32 as a BLE-bridge (+9k2 mem, +292k flash)
-#endif // enable USE_MI_HOMEKIT
+#endif // USE_MI_EXT_GUI
+#define USE_MI_ESP32                             // (ESP32 only) Add support for ESP32 as a BLE-bridge (+9k2 mem, +292k flash)
 
 #endif  // FIRMWARE_BLUETOOTH
 
@@ -337,26 +302,23 @@
 #define USE_I2S
 #define USE_SPI
 #define USE_LVGL
-#define USE_LVGL_HASPMOTA
-#define USE_LVGL_FREETYPE
   #undef SET_ESP32_STACK_SIZE
   #define SET_ESP32_STACK_SIZE (24 * 1024)
-#define USE_LVGL_PNG_DECODER
 #define USE_DISPLAY
-#define SHOW_SPLASH
-#define USE_XPT2046
-#define USE_FT5206
-#define USE_GT911
 #define USE_MPU_ACCEL
 #define USE_RTC_CHIPS                            // Enable RTC chip support and NTP server - Select only one
   #define USE_BM8563
 #define USE_MLX90614
 #define USE_UNIVERSAL_DISPLAY
+#define USE_UNIVERSAL_TOUCH
+//#define USE_XPT2046
+//#define USE_FT5206
+//#define USE_GT911
+//#define USE_CST816S
 #define USE_DISPLAY_LVGL_ONLY
 
 //#undef USE_DISPLAY_MODES1TO5
 #undef USE_DISPLAY_LCD
-#undef USE_DISPLAY_SSD1306
 #undef USE_DISPLAY_MATRIX
 #undef USE_DISPLAY_SEVENSEG
 
@@ -631,6 +593,9 @@
 
 #define USE_LIGHT_PALETTE                        // Add support for color palette (+0k9 code)
 #define USE_LIGHT_ARTNET                         // Add support for DMX/ArtNet via UDP on port 6454 (+3.5k code)
+#ifdef CONFIG_IDF_TARGET_ESP32C3
+#define USE_MAGIC_SWITCH                         // Add Sonoff MagicSwitch support as implemented in Sonoff Basic R4
+#endif
 
 #define USE_DS18x20                              // Add support for DS18x20 sensors with id sort, single scan and read retry (+1k3 code)
 
