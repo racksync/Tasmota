@@ -21,11 +21,17 @@
 #define _TASMOTA_VERSION_H_
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const uint32_t TASMOTA_VERSION = 0x0D020000;   // 13.2.0.0
 =======
 #define TASMOTA_SHA_SHORT                      // Filled by Github sed
 
 const uint32_t TASMOTA_VERSION = 0x0D040101;   // 13.4.1.1
 >>>>>>> 2a0c53a3828368c3e460037ab9e2877a3b41378a
+=======
+#define TASMOTA_SHA_SHORT                      // Filled by Github sed
+
+const uint32_t TASMOTA_VERSION = 0x0E000000;   // 14.0.0.0
+>>>>>>> d8c53d48d1c1397da0af9d8e0d75216c2798ead9
 
 #endif  // _TASMOTA_VERSION_H_

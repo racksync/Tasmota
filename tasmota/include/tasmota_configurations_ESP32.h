@@ -187,11 +187,14 @@
 #define USE_WEBCLIENT
 #define USE_WEBCLIENT_HTTPS
 
-// FIX ME Safeboot for ESP32 and ESP32solo1 to big with Core 3.0.0
-//#if CONFIG_IDF_TARGET_ESP32
-//  #define USE_SERIAL_BRIDGE                        // Add support for software Serial Bridge console Tee (+2k code)
-//  #define USE_ETHERNET
-//#endif  // CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_FREERTOS_UNICORE
+  #undef USE_MQTT_TLS
+//  #define USE_SERIAL_BRIDGE                        // Add support for software Serial Bridge console Tee (+4.5k code)
+  #define USE_SPI                                    // Make SPI Ethernet adapters useable (+124 bytes)
+  #define USE_ETHERNET
+#endif  // CONFIG_FREERTOS_UNICORE
+#endif  // CONFIG_IDF_TARGET_ESP32
 
 #endif  // FIRMWARE_SAFEBOOT
 
