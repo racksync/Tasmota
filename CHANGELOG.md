@@ -1,18 +1,46 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - Development
+
+## [14.0.0.1]
+### Added
+- Enabled watchdog for ESP32 and variants (#21422)
+- Optional command ``WebRun`` (as WebQuery extension) (#21364)
+- Support for Knx dimmer and color (#21434)
+- Support for Matter 1.3 Water leak detectors (#21456)
+
+### Breaking Changed
+
+### Changed
+- ESP32 compiler option from `target-align` to `no-target-align` (#21407)
+- On universal display remove default backlight power if a PWM channel is used for backlight
+- Berry binary compiled with gcc (#21426)
+- GPIOViewer from v1.5.2 to v1.5.3 (No functional change)
+- ESP32 I2S audio improvements (#21433)
+- Support W5500 SPI ethernet using four SPI GPIOs only without IRQ and RESET
+- Berry change internal storage of parent class for methods
+
+### Fixed
+- Domoticz re-subscribe on MQTT reconnect. Regression from v13.4.0.3 (#21281)
+- Watchdog restart or freeze if ``displaytext`` is more than 128 characters (#21401)
+- Avoid connection errors when switching to safeboot to upload OTA firmware (#21428)
+- Berry Leds matrix alternate more and error about 'bri' attribute (#21431)
+- Wrong timeout in `WebQuery` and `webclient` since Core3 (#21442)
+- Webradio crash with invalid url (#21446)
+- Zigbee crash when removing `ZbName` (#21449)
+- ESP32 BLE fix scanning (#21451)
+- Matter auto-fix IPv6 link-local zone id when network reconnects
+
+### Removed
+- Support of old insecure fingerprint algorithm. Deprecated since v8.4.0 (#21417)
+
 ## [Released]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-## [13.4.1.1]
-=======
 ## [14.0.0] 20240515
 - Release Rodney
 
 ## [13.4.1.2] 20240515
->>>>>>> d8c53d48d1c1397da0af9d8e0d75216c2798ead9
 ### Added
 - ESP32 esp32_partition_app3904k_fs3392k partition scheme for 8MB ESP32S3 (#21241)
 - TCP Serial bridge GPIO type `TCP Tx En` (#21269)
@@ -447,10 +475,6 @@ All notable changes to this project will be documented in this file.
 - ESP32 I2C allow bus2 support when bus1 is not enabled
 - ESP32 IR receive with Arduino Core 3 (#19904)
 
-<<<<<<< HEAD
->>>>>>> 2a0c53a3828368c3e460037ab9e2877a3b41378a
-=======
->>>>>>> d8c53d48d1c1397da0af9d8e0d75216c2798ead9
 ## [13.2.0] 20231019
 - Release Quincy
 

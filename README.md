@@ -31,15 +31,7 @@ Firmware binaries can be downloaded from http://ota.tasmota.com/tasmota/release/
 
 ## Development
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-[![Dev Version](https://img.shields.io/badge/development%20version-v13.2.x.x-blue.svg)](https://github.com/arendst/Tasmota)
-=======
-[![Dev Version](https://img.shields.io/badge/development%20version-v13.4.x.x-blue.svg)](https://github.com/arendst/Tasmota)
->>>>>>> 2a0c53a3828368c3e460037ab9e2877a3b41378a
-=======
 [![Dev Version](https://img.shields.io/badge/development%20version-v14.0.x.x-blue.svg)](https://github.com/arendst/Tasmota)
->>>>>>> d8c53d48d1c1397da0af9d8e0d75216c2798ead9
 [![Download Dev](https://img.shields.io/badge/download-development-yellow.svg)](http://ota.tasmota.com/tasmota/)
 [![Tasmota CI](https://github.com/arendst/Tasmota/actions/workflows/build_all_the_things.yml/badge.svg)](https://github.com/arendst/Tasmota/actions/workflows/build_all_the_things.yml)
 [![Build_development](https://github.com/arendst/Tasmota/actions/workflows/Tasmota_build_devel.yml/badge.svg)](https://github.com/arendst/Tasmota/actions/workflows/Tasmota_build_devel.yml)
